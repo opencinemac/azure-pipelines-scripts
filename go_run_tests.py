@@ -53,7 +53,7 @@ def run_test():
     sys.stderr.write(stderr)
 
     STD_OUT_LOG.write_text(stdout)
-    STD_ERR_LOG.write_text(stdout)
+    STD_ERR_LOG.write_text(stderr)
 
     if proc.returncode != 0:
         sys.exit(proc.returncode)
