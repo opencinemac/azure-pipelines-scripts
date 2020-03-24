@@ -8,11 +8,11 @@ MODULE_DIR = pathlib.Path("./").absolute()
 
 CONFIG_PATH = MODULE_DIR / "setup.cfg"
 
-STD_OUT_LOG = pathlib.Path(".reports/test_stdout.txt")
-STD_ERR_LOG = pathlib.Path(".reports/test_stderr.txt")
-COVERAGE_LOG = pathlib.Path(".reports/coverage.out")
-TEST_REPORT = pathlib.Path(".reports/test_report.html")
-COVERAGE_REPORT = pathlib.Path("./zdevelop/tests/reports/coverage.html")
+STD_OUT_LOG = pathlib.Path("./reports/test_stdout.txt")
+STD_ERR_LOG = pathlib.Path("./reports/test_stderr.txt")
+COVERAGE_LOG = pathlib.Path("./reports/coverage.out")
+TEST_REPORT = pathlib.Path("./reports/test_report.html")
+COVERAGE_REPORT = pathlib.Path("./reports/coverage.html")
 
 COVERAGE_REGEX = re.compile(r"coverage: (\d+.\d+)% of statements in ./...")
 
