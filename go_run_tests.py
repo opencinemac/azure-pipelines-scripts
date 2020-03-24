@@ -4,7 +4,9 @@ import pathlib
 import subprocess
 from configparser import ConfigParser
 
-CONFIG_PATH: pathlib.Path = pathlib.Path(__file__).parent.parent.parent / "setup.cfg"
+MODULE_DIR = pathlib.Path("./").absolute()
+
+CONFIG_PATH = MODULE_DIR / "setup.cfg"
 
 STD_OUT_LOG = pathlib.Path("./zdevelop/tests/_reports/test_stdout.txt")
 STD_ERR_LOG = pathlib.Path("./zdevelop/tests/_reports/test_stderr.txt")
