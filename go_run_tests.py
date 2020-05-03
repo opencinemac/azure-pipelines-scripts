@@ -14,7 +14,7 @@ COVERAGE_LOG = pathlib.Path("./reports/coverage.out")
 TEST_REPORT = pathlib.Path("./reports/test_report.html")
 COVERAGE_REPORT = pathlib.Path("./reports/coverage.html")
 
-COVERAGE_REGEX = re.compile(r"coverage: (\d+.\d+)% of statements in ./...")
+COVERAGE_REGEX = re.compile(r"total:\s+\(statements\)\s+(\d+\.\d)%")
 
 
 def load_cfg() -> ConfigParser:
@@ -56,6 +56,34 @@ def run_test():
 
     STD_OUT_LOG.write_text(stdout)
     STD_ERR_LOG.write_text(stderr)
+
+    if proc.returncode != 0:
+        sys.exit(proc.returncode)
+
+    # Use the cov command to generate the total coverage
+    command = [
+        "go",
+        "tool",
+        "cover",
+        "--func",
+        COVERAGE_LOG,
+    ]
+
+    proc = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
+    stdout, stderr = proc.communicate()
+
+    sys.stdout.write(stdout)
+    sys.stderr.write(stderr)
+
+    with STD_OUT_LOG.open("a") as f:
+        f.write(stdout)
+    with STD_ERR_LOG.open("a") as f:
+        f.write(stderr)
 
     if proc.returncode != 0:
         sys.exit(proc.returncode)
