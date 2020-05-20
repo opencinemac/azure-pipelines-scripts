@@ -1,6 +1,5 @@
 import sys
 import pathlib
-import argparse
 import configparser
 from xml.etree import ElementTree as et
 
@@ -20,7 +19,6 @@ def load_cfg(config_path: pathlib.Path) -> configparser.ConfigParser:
 if __name__ == "__main__":
     # Get the main package name.
     config = load_cfg(pathlib.Path("./setup.cfg").absolute())
-    package_name = config.get("metadata", "name")
 
     minimum_coverage = config.getfloat("testing", "coverage_required", fallback=0.85)
     print(f"COVERAGE REQUIRED: {minimum_coverage * 100}%")
@@ -30,7 +28,7 @@ if __name__ == "__main__":
     )
 
     cov_xml: et.Element = et.parse(coverage_path).getroot()
-    package_info: et.Element = cov_xml.find(f".//package[@name='{package_name}']")
+    package_info: et.Element = cov_xml.find(f".//package[@name='.']")
 
     coverage = float(package_info.attrib["line-rate"])
 
