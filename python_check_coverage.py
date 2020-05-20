@@ -35,7 +35,7 @@ if __name__ == "__main__":
     if coverage < minimum_coverage:
         cov_percent = coverage * 100
         error_message = (
-            f"test coverage must exceed 85% to publish, "
+            f"test coverage must exceed {minimum_coverage * 100}% to publish, "
             f"current coverage is {cov_percent}%\n"
         )
         print(error_message)
