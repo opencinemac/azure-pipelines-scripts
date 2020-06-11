@@ -4,10 +4,7 @@ import re
 import configparser
 import sys
 import enum
-import shlex
 import os
-import requests
-from requests.auth import HTTPBasicAuth
 from packaging import version
 from typing import Tuple, List, Dict, Callable
 
@@ -53,36 +50,36 @@ def update_go_files(version_value: str) -> None:
     pass
 
 
-# PYTHON - SCRIPTS
-def list_versions_pypi(config: configparser.ConfigParser) -> List[str]:
-    name: str = config.get("metadata", "name")
-    print(f"PACKAGE NAME:", name)
-
-    pip_command = f"pip install {name}==notaversion"
-    pip_command = shlex.split(pip_command)
-
-    pip_response: str = str(
-        subprocess.Popen(
-            pip_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        ).communicate()[1]
-    )
-    if not pip_response:
-        print("Pip did not respond.")
-        exit(1)
-
-    if "could not find a version" not in pip_response.lower():
-        error_message = "pip response unknown\n"
-        print(error_message)
-        sys.stderr.write(error_message)
-
-    versions_pattern = re.compile(r"\(from versions: (.+)\)")  # noqa: W605
-
-    try:
-        existing_versions: str = re.findall(versions_pattern, pip_response)[0]
-    except IndexError:
-        existing_versions = ""
-
-    return existing_versions.split(", ")
+# # PYTHON - SCRIPTS
+# def list_versions_pypi(config: configparser.ConfigParser) -> List[str]:
+#     name: str = config.get("metadata", "name")
+#     print(f"PACKAGE NAME:", name)
+#
+#     pip_command = f"pip install {name}==notaversion"
+#     pip_command = shlex.split(pip_command)
+#
+#     pip_response: str = str(
+#         subprocess.Popen(
+#             pip_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+#         ).communicate()[1]
+#     )
+#     if not pip_response:
+#         print("Pip did not respond.")
+#         exit(1)
+#
+#     if "could not find a version" not in pip_response.lower():
+#         error_message = "pip response unknown\n"
+#         print(error_message)
+#         sys.stderr.write(error_message)
+#
+#     versions_pattern = re.compile(r"\(from versions: (.+)\)")  # noqa: W605
+#
+#     try:
+#         existing_versions: str = re.findall(versions_pattern, pip_response)[0]
+#     except IndexError:
+#         existing_versions = ""
+#
+#     return existing_versions.split(", ")
 
 
 def update_python_files(version_value: str) -> None:
@@ -93,40 +90,43 @@ def update_python_files(version_value: str) -> None:
     version_file_path.write_text(version_file_contents)
 
 
-def list_versions_docker_hub(config: configparser.ConfigParser) -> List[str]:
-    service_name = config.get("metadata", "name")
-
-    # Registry URL
-    REGISTRY_URL = os.environ["REGISTRY_URL"]
-
-    # Docker ID
-    DOCKER_ID = os.environ["DOCKER_ID"]
-
-    # Docker PW
-    DOCKER_PASSWORD = os.environ["DOCKER_PASSWORD"]
-
-    url = f"https://{REGISTRY_URL}/v2/{service_name}/tags/list"
-    response = requests.get(url, auth=HTTPBasicAuth(DOCKER_ID, DOCKER_PASSWORD))
-
-    try:
-        existing_versions: List[str] = response.json()["tags"]
-    except KeyError as error:
-        if response.status_code != 404:
-            raise error
-        if "NAME_UNKNOWN" != response.json()["errors"][0]["code"]:
-            raise error
-        existing_versions = list()
-
-    return existing_versions
+# def list_versions_docker_hub(config: configparser.ConfigParser) -> List[str]:
+#     service_name = config.get("metadata", "name")
+#
+#     # Registry URL
+#     REGISTRY_URL = os.environ["REGISTRY_URL"]
+#
+#     # Docker ID
+#     DOCKER_ID = os.environ["DOCKER_ID"]
+#
+#     # Docker PW
+#     DOCKER_PASSWORD = os.environ["DOCKER_PASSWORD"]
+#
+#     url = f"https://{REGISTRY_URL}/v2/{service_name}/tags/list"
+#     response = requests.get(url, auth=HTTPBasicAuth(DOCKER_ID, DOCKER_PASSWORD))
+#
+#     try:
+#         existing_versions: List[str] = response.json()["tags"]
+#     except KeyError as error:
+#         if response.status_code != 404:
+#             raise error
+#         if "NAME_UNKNOWN" != response.json()["errors"][0]["code"]:
+#             raise error
+#         existing_versions = list()
+#
+#     return existing_versions
 
 
 LIST_VERSION_FUNC_INDEX_TYPE = Dict[
     Languages, Callable[[configparser.ConfigParser], List[str]]
 ]
+
+# We're going to use git for all version lists moving forward so that pypi, git,
+# and the target packaging service are less likely to become de-synced.
 LIST_VERSION_FUNCS: LIST_VERSION_FUNC_INDEX_TYPE = {
-    Languages.PYTHON: list_versions_pypi,
+    Languages.PYTHON: list_versions_git,
     Languages.GO: list_versions_git,
-    Languages.PYTHON_SERVICE: list_versions_docker_hub,
+    Languages.PYTHON_SERVICE: list_versions_git,
 }
 
 # Functions to update library files with new version
