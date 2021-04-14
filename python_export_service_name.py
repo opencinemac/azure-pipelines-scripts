@@ -16,8 +16,9 @@ def load_cfg(config_path: pathlib.Path) -> configparser.ConfigParser:
 def main():
     config = load_cfg(pathlib.Path("./setup.cfg").absolute())
 
-    # Get the name from the config.
-    service_name = config.get("metadata", "name")
+    # Get the name from the config. We need to lowercase it since docker does not
+    # accept mixed-case repo names.
+    service_name = config.get("metadata", "name").lower()
 
     # set a variable using azure's syntax.
     script = f"echo ##vso[task.setvariable variable=SERVICE_NAME]{service_name}"
