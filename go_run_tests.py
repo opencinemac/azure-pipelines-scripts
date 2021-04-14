@@ -31,17 +31,28 @@ def run_test():
     config = load_cfg()
     coverage_required = config.getfloat("testing", "coverage_required")
     sys.stdout.write(f"COVERAGE REQUIRED: {coverage_required}\n")
+    race_detection = config.getboolean("testing", "race_detection", fallback=True)
 
     command = [
         "go",
         "test",
         "-v",
         "-failfast",
-        "-covermode=count",
-        f"-coverprofile={COVERAGE_LOG}",
-        "-coverpkg=./...",
-        "./...",
     ]
+
+    # Add the race flag if we are using it.
+    if race_detection:
+        command.append("-race")
+
+    # Finish building the command.
+    command.extend(
+        [
+            "-covermode=atomic",
+            f"-coverprofile={COVERAGE_LOG}",
+            "-coverpkg=./...",
+            "./...",
+        ]
+    )
 
     proc = subprocess.Popen(
         command,
