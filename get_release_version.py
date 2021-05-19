@@ -5,6 +5,7 @@ import configparser
 import sys
 import enum
 import os
+import toml
 from packaging import version
 from typing import Tuple, List, Dict, Callable
 
@@ -19,6 +20,7 @@ CONFIG_PATH = MODULE_DIR / "setup.cfg"
 class Languages(enum.Enum):
     PYTHON = "PYTHON"
     GO = "GO"
+    RUST = "RUST"
     PYTHON_SERVICE = "PYTHON_SERVICE"
 
 
@@ -90,6 +92,12 @@ def update_python_files(version_value: str) -> None:
     version_file_path.write_text(version_file_contents)
 
 
+def update_rust_files(version_value: str) -> None:
+    cargo = toml.load("./cargo.toml")
+    cargo["metadata"]["version"] = version_value
+    toml.dump(cargo, "./cargo.toml")
+
+
 # def list_versions_docker_hub(config: configparser.ConfigParser) -> List[str]:
 #     service_name = config.get("metadata", "name")
 #
@@ -126,6 +134,7 @@ LIST_VERSION_FUNC_INDEX_TYPE = Dict[
 LIST_VERSION_FUNCS: LIST_VERSION_FUNC_INDEX_TYPE = {
     Languages.PYTHON: list_versions_git,
     Languages.GO: list_versions_git,
+    Languages.RUST: list_versions_git,
     Languages.PYTHON_SERVICE: list_versions_git,
 }
 
@@ -133,6 +142,7 @@ LIST_VERSION_FUNCS: LIST_VERSION_FUNC_INDEX_TYPE = {
 UPDATE_FILES_FUNCS: Dict[Languages, Callable[[str], None]] = {
     Languages.PYTHON: update_python_files,
     Languages.GO: update_go_files,
+    Languages.RUST: update_rust_files,
     Languages.PYTHON_SERVICE: update_python_files,
 }
 
