@@ -5,13 +5,13 @@ from xml.etree import ElementTree as et
 
 
 CONFIG_PATH: pathlib.Path = pathlib.Path(__file__).parent.parent.parent / "setup.cfg"
-COVERAGE_XML = pathlib.Path("./zdevelop/tests/_reports/test_stdout.txt")
+COVERAGE_XML = pathlib.Path("./zdevelop/tests/_reports/cobertura.xml")
 
 
 def load_cfg() -> ConfigParser:
     """
     loads library config file
-    :return: loaded `ConfigParser` object
+    :return: loaded `ConfigParser` object`
     """
     config = ConfigParser()
     config.read(CONFIG_PATH)
