@@ -94,7 +94,7 @@ def update_python_files(version_value: str) -> None:
 
 def update_rust_files(version_value: str) -> None:
     cargo = toml.load("./Cargo.toml")
-    cargo["metadata"]["version"] = version_value
+    cargo["package"]["version"] = version_value
     toml.dump(cargo, "./Cargo.toml")
 
 
