@@ -95,7 +95,8 @@ def update_python_files(version_value: str) -> None:
 def update_rust_files(version_value: str) -> None:
     cargo = toml.load("./Cargo.toml")
     cargo["package"]["version"] = version_value
-    toml.dump(cargo, "./Cargo.toml")
+    with pathlib.Path("./Cargo.toml").open("w") as f:
+        toml.dump(cargo, f)
 
 
 # def list_versions_docker_hub(config: configparser.ConfigParser) -> List[str]:
