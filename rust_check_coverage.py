@@ -25,7 +25,7 @@ if __name__ == '__main__':
     print(f"COVERAGE REQUIRED: {minimum_coverage * 100}%")
 
     cov_xml: et.Element = et.parse(COVERAGE_XML).getroot()
-    coverage = float(cov_xml.find("./coverage").attrib["line-rate"])
+    coverage = float(cov_xml.attrib["line-rate"])
 
     if coverage < minimum_coverage:
         cov_percent = coverage * 100
