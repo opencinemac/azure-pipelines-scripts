@@ -104,9 +104,11 @@ REGEX_ELIXIR_VERSION = re.compile(r"version: \"\d+\.\d+\.\d+\",")
 
 
 def update_elixir_files(version_value: str) -> None:
-    with pathlib.Path("./mix.exs").open("w") as f:
+    with pathlib.Path("./mix.exs").open("r") as f:
         data = f.read()
-        REGEX_ELIXIR_VERSION.sub(f"version: \"{version_value}\",", data)
+        
+    with pathlib.Path("./mix.exs").open("w") as f:
+        data = REGEX_ELIXIR_VERSION.sub(f"version: \"{version_value}\",", data)
         f.write(data)
 
 
