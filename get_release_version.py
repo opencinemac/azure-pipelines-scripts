@@ -21,6 +21,7 @@ class Languages(enum.Enum):
     PYTHON = "PYTHON"
     GO = "GO"
     RUST = "RUST"
+    ELIXIR = "ELIXIR"
     PYTHON_SERVICE = "PYTHON_SERVICE"
 
 
@@ -99,6 +100,16 @@ def update_rust_files(version_value: str) -> None:
         toml.dump(cargo, f)
 
 
+REGEX_ELIXIR_VERSION = re.compile(r"version: \"\d+\.\d+\.\d+\",")
+
+
+def update_elixir_files(version_value: str) -> None:
+    with pathlib.Path("./mix.exs").open("rw") as f:
+        data = f.read()
+        REGEX_ELIXIR_VERSION.sub(f"version: \"{version_value}\",", data)
+        f.write(data)
+
+
 # def list_versions_docker_hub(config: configparser.ConfigParser) -> List[str]:
 #     service_name = config.get("metadata", "name")
 #
@@ -136,6 +147,7 @@ LIST_VERSION_FUNCS: LIST_VERSION_FUNC_INDEX_TYPE = {
     Languages.PYTHON: list_versions_git,
     Languages.GO: list_versions_git,
     Languages.RUST: list_versions_git,
+    Languages.ELIXIR: list_versions_git,
     Languages.PYTHON_SERVICE: list_versions_git,
 }
 
@@ -144,6 +156,7 @@ UPDATE_FILES_FUNCS: Dict[Languages, Callable[[str], None]] = {
     Languages.PYTHON: update_python_files,
     Languages.GO: update_go_files,
     Languages.RUST: update_rust_files,
+    Languages.ELIXIR: update_elixir_files,
     Languages.PYTHON_SERVICE: update_python_files,
 }
 
